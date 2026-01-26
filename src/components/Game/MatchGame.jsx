@@ -206,7 +206,7 @@ export default function MatchGame({ level = 'small_stars', stageConfig, onComple
                 </button>
 
                 <div className="text-center flex-1">
-                    <h2 className="text-lg md:text-3xl font-display font-bold text-slate-800 leading-tight">Match the Picture!</h2>
+                    <h2 className="text-lg md:text-3xl font-display font-bold text-slate-800 leading-tight">Match the Pairs!</h2>
                     <p className="text-xs md:text-base text-slate-500 capitalize">{level.replace('_', ' ')} Challenge</p>
                 </div>
 

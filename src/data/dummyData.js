@@ -3,6 +3,7 @@ export const LEVEL_CONFIG = {
         stages: [
             { id: 1, type: 'find_pair', gridSize: 12, pairCount: 6, score: 15, time: 30 }, // Find The Pair (3x4 Grid)
             { id: 2, type: 'line_match', score: 20, time: 45 }, // Line Matching Game
+            { id: 3, type: 'spelling', count: 2, score: 30, time: 60 }, // Spelling Game (2 rounds)
         ]
     },
     trailblazers: {
@@ -14,7 +15,9 @@ export const LEVEL_CONFIG = {
     // Fallback for others
     high_flyers: {
         stages: [
-            { id: 1, type: 'puzzle', score: 25, time: 60 }
+            { id: 1, type: 'puzzle', score: 25, time: 90 }, // Bedroom Scene
+            { id: 2, type: 'puzzle', score: 25, time: 90 }, // Restaurant Scene (Randomly rotated but effectively stage 2)
+            { id: 3, type: 'text_memory', pairCount: 8, score: 30, time: 90 } // Antonyms & Verbs
         ]
     },
     frontrunner: { stages: [{ id: 1, type: 'match', pairs: 8, score: 20, time: 90 }] }
@@ -34,28 +37,47 @@ export const PUZZLE_GAME_DATA = {
     high_flyers: [
         {
             id: 1,
-            instruction: "Complete the scene!",
-            mainImage: "https://t4.ftcdn.net/jpg/02/10/53/78/360_F_210537877_02nZ80a0k6gj8B2sC8c5g0j8m2c6g0j8.jpg", // Better landscape
-            holePosition: { top: '15%', left: '75%', width: '12%', height: '20%' }, // Sun spot
-            holeShape: 'circle',
-            correctId: "sun",
-            options: [
-                { id: "sun", image: "https://cdn-icons-png.flaticon.com/512/869/869869.png" },
-                { id: "moon", image: "https://cdn-icons-png.flaticon.com/512/702/702471.png" },
-                { id: "cloud", image: "https://cdn-icons-png.flaticon.com/512/414/414927.png" }
+            imageId: 'bedroom',
+            instruction: "Match the words to the clothes!",
+            items: [
+                { id: 'dress', label: 'Dress', target: { top: '52%', left: '10%', width: '25%', height: '25%' } },
+                { id: 'green_shirt', label: 'Shirt', target: { top: '35%', left: '55%', width: '18%', height: '18%' } },
+                { id: 'jeans', label: 'Jeans', target: { top: '68%', left: '18%', width: '22%', height: '25%' } },
+                { id: 'hat_boy', label: 'Hat', target: { top: '35%', left: '80%', width: '15%', height: '18%' } },
+                { id: 'shoes', label: 'Shoes', target: { top: '58%', left: '62%', width: '12%', height: '12%' } },
+                { id: 'boots', label: 'Boots', target: { top: '18%', left: '25%', width: '10%', height: '15%' } },
+                { id: 'cap', label: 'Cap', target: { top: '15%', left: '82%', width: '10%', height: '10%' } },
+                { id: 'skirt', label: 'Skirt', target: { top: '35%', left: '35%', width: '15%', height: '15%' } }
             ]
         },
         {
             id: 2,
-            instruction: "Who lives in the water?",
-            mainImage: "https://png.pngtree.com/thumb_back/fh260/background/20230527/pngtree-animated-underwater-background-with-fish-and-coral-reefs-image_2667104.jpg", // Clearer Underwater
-            holePosition: { top: '50%', left: '40%', width: '20%', height: '20%' },
-            holeShape: 'circle',
-            correctId: "fish",
-            options: [
-                { id: "fish", image: "https://cdn-icons-png.flaticon.com/512/2970/2970077.png" },
-                { id: "bird", image: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
-                { id: "cat", image: "https://cdn-icons-png.flaticon.com/512/616/616408.png" }
+            imageId: 'restaurant',
+            instruction: "Find the food items!",
+            items: [
+                { id: 'pizza', label: 'Pizza', target: { top: '15%', left: '30%', width: '25%', height: '10%' } },
+                { id: 'ice_cream', label: 'Ice Cream', target: { top: '45%', left: '10%', width: '8%', height: '15%' } },
+                { id: 'burger', label: 'Burger', target: { top: '80%', left: '5%', width: '12%', height: '12%' } },
+                { id: 'salad', label: 'Salad', target: { top: '75%', left: '18%', width: '12%', height: '15%' } },
+                { id: 'tea', label: 'Tea', target: { top: '60%', left: '53%', width: '8%', height: '12%' } },
+                { id: 'egg', label: 'Eggs', target: { top: '40%', left: '60%', width: '12%', height: '12%' } },
+                { id: 'cookies', label: 'Cookies', target: { top: '50%', left: '60%', width: '12%', height: '10%' } },
+                { id: 'sandwich', label: 'Sandwich', target: { top: '55%', left: '35%', width: '12%', height: '12%' } }
+            ]
+        },
+        {
+            id: 3,
+            imageId: 'playroom',
+            instruction: "Find the toys!",
+            items: [
+                { id: 'bear', label: 'Teddy Bear', target: { top: '38%', left: '32%', width: '10%', height: '15%' } },
+                { id: 'duck', label: 'Duck', target: { top: '32%', left: '68%', width: '8%', height: '10%' } },
+                { id: 'ball', label: 'Ball', target: { top: '48%', left: '73%', width: '8%', height: '10%' } },
+                { id: 'blocks', label: 'Blocks', target: { top: '25%', left: '60%', width: '12%', height: '15%' } },
+                { id: 'clock', label: 'Clock', target: { top: '60%', left: '40%', width: '8%', height: '12%' } },
+                { id: 'train', label: 'Train', target: { top: '58%', left: '20%', width: '15%', height: '12%' } },
+                { id: 'book', label: 'Book', target: { top: '48%', left: '50%', width: '10%', height: '12%' } },
+                { id: 'headphones', label: 'Headphones', target: { top: '68%', left: '30%', width: '10%', height: '15%' } }
             ]
         }
     ]
@@ -122,5 +144,16 @@ export const MATCHING_GAME_DATA = {
         { id: 7, text1: "Write", text2: "Wrote" },
         { id: 8, text1: "Speak", text2: "Spoke" },
         { id: 9, text1: "Run", text2: "Ran" },
+    ]
+};
+
+export const SPELLING_GAME_DATA = {
+    small_stars: [
+        { id: 1, word: "CAT", image: "https://campus.extension.org/pluginfile.php/610092/course/overviewfiles/Cat_March_2010-1.jpg" },
+        { id: 2, word: "DOG", image: "https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=67773a9d419786091c958b2ad08eae5e" },
+        { id: 3, word: "COW", image: "https://png.pngtree.com/png-clipart/20250309/original/pngtree-holstein-cow-png-image_20610191.png" },
+        { id: 4, word: "DUCK", image: "https://static.vecteezy.com/system/resources/previews/055/395/710/non_2x/a-white-duck-slightly-angled-with-its-orange-webbed-feet-the-duck-appears-alert-and-curious-gazing-forward-with-bright-round-eyes-free-png.png" },
+        { id: 5, word: "FISH", image: "https://s7d2.scene7.com/is/image/PetSmart/4032827" },
+        { id: 6, word: "BIRD", image: "https://media.istockphoto.com/id/626132614/id/foto/redstart-biru-yang-indah.jpg?b=1&s=612x612&w=0&k=20&c=a7bU9hGOlarZwrJqzGohdPerYWwgq3ryIoDQp8cNTro=" }
     ]
 };

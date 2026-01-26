@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { MATCHING_GAME_DATA } from '../../data/dummyData';
 
 // Utility to shuffle
 const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
 
-export default function FindThePairGame({ level = 'small_stars', stageConfig, onComplete }) {
+export default function FindThePairGame({ level = 'small_stars', stageConfig, onComplete, onBack }) {
     const [items, setItems] = useState([]);
-    const [phase, setPhase] = useState('memorize'); // 'memorize' | 'shuffling' | 'search'
+    const [phase, setPhase] = useState('instruction'); // 'instruction' (View Target) -> 'memorize' (View All) -> 'shuffling' -> 'search'
     const [targetItem, setTargetItem] = useState(null); // The item user needs to find
     const [selected, setSelected] = useState([]);
     const [matched, setMatched] = useState([]);
@@ -15,7 +16,6 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
     const [mistakes, setMistakes] = useState(0);
     const [score, setScore] = useState(stageConfig.score);
     const [gameOver, setGameOver] = useState(false);
-    const [showTargetModal, setShowTargetModal] = useState(false);
 
     // Initialize Game
     useEffect(() => {
@@ -34,12 +34,19 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
             gameItems.push({ ...item, uid: item.id + '_2' });
         });
 
-        setItems(shuffle(gameItems));
+        const shuffledItems = shuffle(gameItems);
+        setItems(shuffledItems);
+
+        // Select Target IMMEDIATELY
+        const randomTarget = shuffledItems[Math.floor(Math.random() * shuffledItems.length)];
+        setTargetItem(randomTarget);
+        setPhase('instruction');
+
     }, [level, stageConfig]);
 
-    // Timer Logic
+    // Timer Logic - ONLY runs during Search
     useEffect(() => {
-        if (gameOver || phase !== 'search' || showTargetModal) return;
+        if (gameOver || phase !== 'search') return;
 
         const timer = setInterval(() => {
             setTimeLeft(prev => {
@@ -51,19 +58,12 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
             });
         }, 1000);
         return () => clearInterval(timer);
-    }, [phase, gameOver, showTargetModal]);
+    }, [phase, gameOver]);
 
-    // Phase: Memorize
-    useEffect(() => {
-        if (phase === 'memorize' && items.length > 0) {
-            const timer = setTimeout(() => {
-                setPhase('shuffling');
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [phase, items]);
+    // Phase transitions handled by user interaction or timeouts
 
-    // Phase: Shuffling
+
+    // Auto-transition from Shuffling to Search
     useEffect(() => {
         if (phase === 'shuffling') {
             const shuffleInterval = setInterval(() => {
@@ -73,7 +73,7 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
             const stopShuffle = setTimeout(() => {
                 clearInterval(shuffleInterval);
                 setPhase('search');
-            }, 3000);
+            }, 2500);
 
             return () => {
                 clearInterval(shuffleInterval);
@@ -82,19 +82,9 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
         }
     }, [phase]);
 
-    // Phase: Search (Target Selection)
-    useEffect(() => {
-        if (phase === 'search' && items.length > 0 && !targetItem) {
-            const randomItem = items[Math.floor(Math.random() * items.length)];
-            setTargetItem(randomItem);
-            setTimeLeft(stageConfig.time || 30);
-            setShowTargetModal(true);
-        }
-    }, [phase, items, targetItem, stageConfig]);
-
     const handleCardClick = (item) => {
         // Prevent clicking if game over, already matched, already selected, modal open, OR 2 cards already open (processing)
-        if (phase !== 'search' || gameOver || matched.includes(item.id) || selected.find(s => s.uid === item.uid) || showTargetModal || selected.length >= 2) return;
+        if (phase !== 'search' || gameOver || matched.includes(item.id) || selected.find(s => s.uid === item.uid) || phase === 'instruction' || selected.length >= 2) return;
 
         // 1. Reveal the card
         const newSelected = [...selected, item];
@@ -154,12 +144,20 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
         <div className="w-full max-w-5xl backdrop-blur-sm bg-white/90 shadow-xl rounded-3xl p-4 md:p-8 animate-fade-in-up flex flex-col items-center min-h-[600px]">
             {/* Header */}
             <div className="w-full flex justify-between items-center mb-8">
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-800">
-                        {phase === 'memorize' ? 'Memorize the positions!' :
-                            phase === 'shuffling' ? 'Shuffling...' :
-                                `Find the ${targetItem?.word}!`}
-                    </h2>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={onBack}
+                        className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500 hover:text-primary-600"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800">
+                            {phase === 'instruction' ? 'Check your Target!' :
+                                phase === 'shuffling' ? 'Shuffling...' :
+                                    `Find the ${targetItem?.word}!`}
+                        </h2>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-xl">
                     <span>⏱️</span>
@@ -168,9 +166,9 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
             </div>
 
             {/* Target Hint (Only in Search Phase) */}
-            {/* Target Popup Modal */}
+            {/* Target Popup Modal - Shows during INSTRUCTION phase */}
             <AnimatePresence>
-                {showTargetModal && targetItem && (
+                {phase === 'instruction' && targetItem && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -183,7 +181,7 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
                                 {targetItem.word}
                             </h2>
                             <button
-                                onClick={() => setShowTargetModal(false)}
+                                onClick={() => setPhase('shuffling')}
                                 className="btn-primary w-full text-lg py-3 shadow-xl shadow-primary-500/30"
                             >
                                 I'm Ready!
@@ -197,10 +195,9 @@ export default function FindThePairGame({ level = 'small_stars', stageConfig, on
             <div className={`grid grid-cols-4 gap-4 w-full max-w-2xl relative z-0`}>
                 {items.map((item) => {
                     // Logic for showing card face
-                    // Memorize: ALL OPEN
                     // Shuffling: ALL CLOSED
                     // Search: CLOSED unless selected/matched
-                    const isOpen = phase === 'memorize' || selected.find(s => s.uid === item.uid) || matched.includes(item.id);
+                    const isOpen = selected.find(s => s.uid === item.uid) || matched.includes(item.id);
 
                     return (
                         <motion.div

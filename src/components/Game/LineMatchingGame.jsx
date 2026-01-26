@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { LINE_MATCH_DATA } from '../../data/dummyData';
 
 const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
 
-export default function LineMatchingGame({ level = 'small_stars', stageConfig, onComplete }) {
+export default function LineMatchingGame({ level = 'small_stars', stageConfig, onComplete, onBack }) {
     const [images, setImages] = useState([]);
     const [words, setWords] = useState([]);
     const [timeLeft, setTimeLeft] = useState(stageConfig.time || 45);
@@ -169,9 +170,17 @@ export default function LineMatchingGame({ level = 'small_stars', stageConfig, o
         >
             {/* Header */}
             <div className="w-full flex justify-between items-center mb-8">
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-800">Match the Actions!</h2>
-                    <p className="text-slate-500">Draw a line from image to word</p>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={onBack}
+                        className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500 hover:text-primary-600"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800">Match the Actions!</h2>
+                        <p className="text-slate-500">Draw a line from image to word</p>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-xl">
                     <span>⏱️</span>
@@ -181,7 +190,7 @@ export default function LineMatchingGame({ level = 'small_stars', stageConfig, o
 
             <div
                 ref={containerRef}
-                className="relative w-full flex-1 flex justify-between items-center px-8"
+                className="relative w-full flex-1 flex justify-between items-center px-8 touch-none"
                 onMouseMove={handleMove}
                 onMouseUp={handleEnd}
                 onTouchMove={handleMove}
