@@ -41,7 +41,7 @@ export const PUZZLE_GAME_DATA = {
             instruction: "Match the words to the clothes!",
             items: [
                 { id: 'dress', label: 'Dress', target: { top: '52%', left: '10%', width: '25%', height: '25%' } },
-                { id: 'green_shirt', label: 'Shirt', target: { top: '35%', left: '55%', width: '18%', height: '18%' } },
+                { id: 'green_shirt', label: 'T-Shirt', target: { top: '35%', left: '55%', width: '18%', height: '18%' } },
                 { id: 'jeans', label: 'Jeans', target: { top: '68%', left: '18%', width: '22%', height: '25%' } },
                 { id: 'hat_boy', label: 'Hat', target: { top: '35%', left: '80%', width: '15%', height: '18%' } },
                 { id: 'shoes', label: 'Shoes', target: { top: '58%', left: '62%', width: '12%', height: '12%' } },
@@ -73,11 +73,11 @@ export const PUZZLE_GAME_DATA = {
                 { id: 'bear', label: 'Teddy Bear', target: { top: '38%', left: '32%', width: '10%', height: '15%' } },
                 { id: 'duck', label: 'Duck', target: { top: '32%', left: '68%', width: '8%', height: '10%' } },
                 { id: 'ball', label: 'Ball', target: { top: '48%', left: '73%', width: '8%', height: '10%' } },
-                { id: 'blocks', label: 'Blocks', target: { top: '25%', left: '60%', width: '12%', height: '15%' } },
-                { id: 'clock', label: 'Clock', target: { top: '60%', left: '40%', width: '8%', height: '12%' } },
-                { id: 'train', label: 'Train', target: { top: '58%', left: '20%', width: '15%', height: '12%' } },
+                { id: 'blocks', label: 'Blocks', target: { top: '28%', left: '46%', width: '12%', height: '15%' } },
+                { id: 'clock', label: 'Clock', target: { top: '52%', left: '29%', width: '12%', height: '15%' } },
+                { id: 'train', label: 'Train', target: { top: '55%', left: '10%', width: '18%', height: '15%' } },
                 { id: 'book', label: 'Book', target: { top: '48%', left: '50%', width: '10%', height: '12%' } },
-                { id: 'headphones', label: 'Headphones', target: { top: '68%', left: '30%', width: '10%', height: '15%' } }
+                { id: 'headphones', label: 'Headphones', target: { top: '65%', left: '42%', width: '12%', height: '15%' } }
             ]
         }
     ]
