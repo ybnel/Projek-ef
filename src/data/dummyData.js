@@ -74,10 +74,10 @@ export const PUZZLE_GAME_DATA = {
                 { id: 'duck', label: 'Duck', target: { top: '32%', left: '68%', width: '8%', height: '10%' } },
                 { id: 'ball', label: 'Ball', target: { top: '48%', left: '73%', width: '8%', height: '10%' } },
                 { id: 'blocks', label: 'Blocks', target: { top: '28%', left: '46%', width: '12%', height: '15%' } },
-                { id: 'clock', label: 'Clock', target: { top: '52%', left: '29%', width: '12%', height: '15%' } },
-                { id: 'train', label: 'Train', target: { top: '55%', left: '10%', width: '18%', height: '15%' } },
+                { id: 'clock', label: 'Clock', target: { top: '54%', left: '40%', width: '10%', height: '12%' } },
+                { id: 'train', label: 'Train', target: { top: '55%', left: '10%', width: '25%', height: '15%' } },
                 { id: 'book', label: 'Book', target: { top: '48%', left: '50%', width: '10%', height: '12%' } },
-                { id: 'headphones', label: 'Headphones', target: { top: '65%', left: '42%', width: '12%', height: '15%' } }
+                { id: 'headphones', label: 'Headphones', target: { top: '70%', left: '48%', width: '12%', height: '15%' } }
             ]
         }
     ]

@@ -196,6 +196,7 @@ export default function PuzzleGame({ level = 'high_flyers', stageConfig, onCompl
                                 className="max-w-full max-h-[580px] w-auto h-auto object-contain select-none pointer-events-none"
                             />
 
+                            {/* DEBUG: Show all hitboxes */}
                             {/* Successfully Placed Labels (Stick to image) */}
                             {currentScene.items.map(item => {
                                 if (!placedItems[item.id]) return null;
