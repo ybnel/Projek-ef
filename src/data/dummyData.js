@@ -16,9 +16,9 @@ export const LEVEL_CONFIG = {
     // Fallback for others
     high_flyers: {
         stages: [
-            { id: 1, type: 'puzzle', score: 25, time: 90 }, // Bedroom Scene
-            { id: 2, type: 'puzzle', score: 25, time: 90 }, // Restaurant Scene (Randomly rotated but effectively stage 2)
-            { id: 3, type: 'text_memory', pairCount: 8, score: 30, time: 90 } // Antonyms & Verbs
+            { id: 1, type: 'puzzle', score: 25, time: 90 }, // Random Bedroom/Restaurant/Playroom
+            { id: 2, type: 'text_memory', pairCount: 8, score: 20, time: 90 }, // Verbs (V1-V2)
+            { id: 3, type: 'sentence_builder', time: 120 } // Sentence Builder
         ]
     },
     frontrunner: { stages: [{ id: 1, type: 'match', pairs: 8, score: 20, time: 90 }] }
@@ -111,7 +111,7 @@ export const MATCHING_GAME_DATA = {
         { id: 8, word: "Horse", image: "https://vmceaston.com/wp-content/uploads/2021/10/iStock-540407826-copy-992x1024.png" }, // Horse
     ],
     high_flyers: [
-        // Verbs (V1 - V2) - Moved from Frontrunner/Shared
+        // Verbs (V1 - V2) - Moved from Frontrunner
         { id: 1, text1: "Go", text2: "Went" },
         { id: 2, text1: "Eat", text2: "Ate" },
         { id: 3, text1: "See", text2: "Saw" },
@@ -121,6 +121,15 @@ export const MATCHING_GAME_DATA = {
         { id: 7, text1: "Write", text2: "Wrote" },
         { id: 8, text1: "Speak", text2: "Spoke" },
         { id: 9, text1: "Run", text2: "Ran" },
+        { id: 10, text1: "Drink", text2: "Drank" },
+        { id: 11, text1: "Sleep", text2: "Slept" },
+        { id: 12, text1: "Swim", text2: "Swam" },
+        { id: 13, text1: "Sing", text2: "Sang" },
+        { id: 14, text1: "Give", text2: "Gave" },
+        { id: 15, text1: "Find", text2: "Found" },
+        { id: 16, text1: "Sit", text2: "Sat" },
+        { id: 17, text1: "Buy", text2: "Bought" },
+        { id: 18, text1: "Catch", text2: "Caught" }
     ],
     trailblazers: [
         // Antonyms (Opposites)

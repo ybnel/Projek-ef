@@ -148,7 +148,7 @@ export default function SentenceBuilderGame({ level = 'high_flyers', stageConfig
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-800">Secret Sentegit nce Builder</h2>
+                        <h2 className="text-2xl font-bold text-slate-800">Secret Sentence Builder</h2>
                         <p className="text-slate-500">Arrange the words to describe the picture!</p>
                     </div>
                 </div>

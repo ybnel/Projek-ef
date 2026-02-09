@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Play, HelpCircle } from 'lucide-react';
 import { MATCHING_GAME_DATA } from '../../data/dummyData';
 
 // Utility to shuffle
@@ -12,6 +12,7 @@ export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onC
     const [matchedPairs, setMatchedPairs] = useState([]);
     const [timeLeft, setTimeLeft] = useState(stageConfig.time || 60);
     const [score, setScore] = useState(0);
+    const [gameStarted, setGameStarted] = useState(false);
     const [gameOver, setGameOver] = useState(false);
     const [mistakes, setMistakes] = useState(0);
 
@@ -19,7 +20,7 @@ export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onC
     useEffect(() => {
         // Get data based on level
         const rawData = MATCHING_GAME_DATA[level] || [];
-        
+
         // Normalize IDs to ensure uniqueness if mixed
         const pool = rawData.map(item => ({ ...item, id: `${level}-${item.id}` }));
 
@@ -57,7 +58,7 @@ export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onC
 
     // Timer
     useEffect(() => {
-        if (gameOver || matchedPairs.length === cards.length / 2) return;
+        if (!gameStarted || gameOver || matchedPairs.length === cards.length / 2) return;
 
         const timer = setInterval(() => {
             setTimeLeft(prev => {
@@ -69,10 +70,11 @@ export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onC
             });
         }, 1000);
         return () => clearInterval(timer);
-    }, [gameOver, matchedPairs, cards.length]);
+    }, [gameStarted, gameOver, matchedPairs, cards.length]);
 
     const handleCardClick = (index) => {
         if (
+            !gameStarted ||
             gameOver ||
             flippedIndices.length >= 2 ||
             flippedIndices.includes(index) ||
@@ -107,6 +109,30 @@ export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onC
             }
         }
     };
+
+    const getInstructions = () => {
+        if (level === 'high_flyers') {
+            return {
+                title: "Match Verbs!",
+                desc: "Find the pair of Present (V1) and Past (V2) forms.",
+                example: "e.g. Eat ↔ Ate"
+            };
+        }
+        if (level === 'trailblazers') {
+            return {
+                title: "Match Opposites!",
+                desc: "Find the pair of Antonyms.",
+                example: "e.g. Hot ↔ Cold"
+            };
+        }
+        return {
+            title: "Match Pairs!",
+            desc: "Find all the matching text pairs.",
+            example: ""
+        };
+    };
+
+    const instructions = getInstructions();
 
     if (gameOver) {
         return (
@@ -179,6 +205,45 @@ export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onC
                     );
                 })}
             </div>
+            {/* Start Game Modal */}
+            <AnimatePresence>
+                {!gameStarted && !gameOver && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-3xl"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            className="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-md text-center border-4 border-primary-100"
+                        >
+                            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-4 text-primary-600">
+                                <HelpCircle size={32} />
+                            </div>
+                            <h2 className="text-3xl font-display font-bold text-slate-800 mb-2">
+                                {instructions.title}
+                            </h2>
+                            <p className="text-slate-600 mb-1 text-lg">
+                                {instructions.desc}
+                            </p>
+                            <p className="text-slate-500 italic mb-8">
+                                {instructions.example}
+                            </p>
+
+                            <button
+                                onClick={() => setGameStarted(true)}
+                                className="group relative px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white rounded-2xl font-bold text-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center gap-3"
+                            >
+                                <Play className="fill-current" />
+                                I'm Ready!
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
