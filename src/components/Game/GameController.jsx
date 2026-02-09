@@ -8,7 +8,7 @@ import PuzzleGame from './PuzzleGame';
 import SpellingGame from './SpellingGame';
 import TextMemoryGame from './TextMemoryGame';
 import GameCompletion from './GameCompletion';
-import PlayerRegistration from './PlayerRegistration';
+import SentenceBuilderGame from './SentenceBuilderGame';
 import bgImage from '../../assets/bg-image.png';
 import bgImage2 from '../../assets/english1plaza.jpg';
 import { LEVEL_CONFIG } from '../../data/dummyData';
@@ -47,15 +47,15 @@ export default function GameController() {
         let stages = LEVEL_CONFIG[levelId]?.stages || [];
 
         if (levelId === 'high_flyers') {
-            // Special logic for High Flyers: Random 2 Puzzles + Text Memory
+            // Special logic for High Flyers: 1 Random Puzzle + Match Game + Text Memory
             const puzzleIds = [1, 2, 3]; // Bedroom, Restaurant, Playroom
             const shuffled = [...puzzleIds].sort(() => Math.random() - 0.5);
-            const selectedPuzzles = shuffled.slice(0, 2);
+            const selectedPuzzle = shuffled[0];
 
             stages = [
-                { id: 1, type: 'puzzle', sceneId: selectedPuzzles[0], score: 25, time: 90 },
-                { id: 2, type: 'puzzle', sceneId: selectedPuzzles[1], score: 25, time: 90 },
-                { id: 3, type: 'text_memory', pairCount: 8, score: 30, time: 90 }
+                { id: 1, type: 'puzzle', sceneId: selectedPuzzle, score: 25, time: 90 },
+                { id: 2, type: 'text_memory', pairCount: 8, score: 20, time: 90 }, // Verb Memory (4x4 Grid)
+                { id: 3, type: 'sentence_builder', time: 120 } // Sentence Builder
             ];
         }
 
@@ -154,6 +154,7 @@ export default function GameController() {
                         />
                     ) : activeStageConfig.type === 'spelling' ? (
                         <SpellingGame
+                            key={activeStageConfig.id}
                             level={currentLevel}
                             stageConfig={activeStageConfig}
                             onComplete={handleStageComplete}
@@ -161,6 +162,20 @@ export default function GameController() {
                         />
                     ) : activeStageConfig.type === 'text_memory' ? (
                         <TextMemoryGame
+                            level={currentLevel}
+                            stageConfig={activeStageConfig}
+                            onComplete={handleStageComplete}
+                            onBack={handleReset}
+                        />
+                    ) : activeStageConfig.type === 'sentence_builder' ? (
+                        <SentenceBuilderGame
+                            level={currentLevel}
+                            stageConfig={activeStageConfig}
+                            onComplete={handleStageComplete}
+                            onBack={handleReset}
+                        />
+                    ) : activeStageConfig.type === 'match' ? (
+                        <MatchGame
                             level={currentLevel}
                             stageConfig={activeStageConfig}
                             onComplete={handleStageComplete}

@@ -14,6 +14,9 @@ const SCENE_IMAGES = {
 
 export default function PuzzleGame({ level = 'high_flyers', stageConfig, onComplete, onBack }) {
     const [score, setScore] = useState(0);
+    const completionRef = useRef(false);
+
+    // Moved usage to after currentSceneIndex decl
     const [timeLeft, setTimeLeft] = useState(stageConfig.time || 90);
     const [gameOver, setGameOver] = useState(false);
 
@@ -49,6 +52,11 @@ export default function PuzzleGame({ level = 'high_flyers', stageConfig, onCompl
         setCurrentSceneIndex(0);
         setPlacedItems({});
     }, [level, stageConfig?.sceneId]);
+
+    // Reset completion lock when scene changes
+    useEffect(() => {
+        completionRef.current = false;
+    }, [currentSceneIndex]);
 
     const currentScene = scenes[currentSceneIndex];
     const currentImage = currentScene ? SCENE_IMAGES[currentScene.imageId] : null;
@@ -112,18 +120,13 @@ export default function PuzzleGame({ level = 'high_flyers', stageConfig, onCompl
 
         if (isInside) {
             // Success for this item
-            setPlacedItems(prev => {
-                const newState = { ...prev, [item.id]: true };
-                // Check win condition immediately
-                if (Object.keys(newState).length === currentScene.items.length) {
-                    handleAllCompleted();
-                }
-                return newState;
-            });
+            setPlacedItems(prev => ({ ...prev, [item.id]: true }));
         }
     };
 
     const handleAllCompleted = () => {
+        if (completionRef.current) return;
+        completionRef.current = true;
         const stageScore = (currentScene.items.length * 10) + timeLeft;
         const newTotalScore = score + stageScore;
         setScore(newTotalScore);
@@ -142,6 +145,12 @@ export default function PuzzleGame({ level = 'high_flyers', stageConfig, onCompl
             }
         }, 1500);
     };
+
+    useEffect(() => {
+        if (currentScene && Object.keys(placedItems).length > 0 && Object.keys(placedItems).length === currentScene.items.length) {
+            handleAllCompleted();
+        }
+    }, [placedItems, currentScene, handleAllCompleted]);
 
     if (gameOver) {
         return (

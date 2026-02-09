@@ -17,10 +17,11 @@ export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onC
 
     // Initialize Game
     useEffect(() => {
-        // Combine data from Trailblazers (Antonyms) and Frontrunner (Verbs)
-        const antonyms = (MATCHING_GAME_DATA['trailblazers'] || []).map(item => ({ ...item, id: `antonym-${item.id}` }));
-        const verbs = (MATCHING_GAME_DATA['frontrunner'] || []).map(item => ({ ...item, id: `verb-${item.id}` }));
-        const pool = [...antonyms, ...verbs];
+        // Get data based on level
+        const rawData = MATCHING_GAME_DATA[level] || [];
+        
+        // Normalize IDs to ensure uniqueness if mixed
+        const pool = rawData.map(item => ({ ...item, id: `${level}-${item.id}` }));
 
         // Select random pairs
         const pairCount = stageConfig.pairCount || 6;

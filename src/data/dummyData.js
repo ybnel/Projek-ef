@@ -4,6 +4,7 @@ export const LEVEL_CONFIG = {
             { id: 1, type: 'find_pair', gridSize: 12, pairCount: 6, score: 15, time: 30 }, // Find The Pair (3x4 Grid)
             { id: 2, type: 'line_match', score: 20, time: 45 }, // Line Matching Game
             { id: 3, type: 'spelling', count: 2, score: 30, time: 60 }, // Spelling Game (2 rounds)
+            { id: 4, type: 'spelling', subType: 'color', count: 5, score: 20, time: 60 } // Color Spelling Game
         ]
     },
     trailblazers: {
@@ -110,16 +111,16 @@ export const MATCHING_GAME_DATA = {
         { id: 8, word: "Horse", image: "https://vmceaston.com/wp-content/uploads/2021/10/iStock-540407826-copy-992x1024.png" }, // Horse
     ],
     high_flyers: [
-        // Number (Digit) - Number (Word)
-        { id: 1, text1: "1", text2: "One" },
-        { id: 2, text1: "2", text2: "Two" },
-        { id: 3, text1: "3", text2: "Three" },
-        { id: 4, text1: "4", text2: "Four" },
-        { id: 5, text1: "5", text2: "Five" },
-        { id: 6, text1: "10", text2: "Ten" },
-        { id: 7, text1: "20", text2: "Twenty" },
-        { id: 8, text1: "50", text2: "Fifty" },
-        { id: 9, text1: "100", text2: "Hundred" },
+        // Verbs (V1 - V2) - Moved from Frontrunner/Shared
+        { id: 1, text1: "Go", text2: "Went" },
+        { id: 2, text1: "Eat", text2: "Ate" },
+        { id: 3, text1: "See", text2: "Saw" },
+        { id: 4, text1: "Take", text2: "Took" },
+        { id: 5, text1: "Make", text2: "Made" },
+        { id: 6, text1: "Know", text2: "Knew" },
+        { id: 7, text1: "Write", text2: "Wrote" },
+        { id: 8, text1: "Speak", text2: "Spoke" },
+        { id: 9, text1: "Run", text2: "Ran" },
     ],
     trailblazers: [
         // Antonyms (Opposites)
@@ -155,5 +156,95 @@ export const SPELLING_GAME_DATA = {
         { id: 4, word: "DUCK", image: "https://static.vecteezy.com/system/resources/previews/055/395/710/non_2x/a-white-duck-slightly-angled-with-its-orange-webbed-feet-the-duck-appears-alert-and-curious-gazing-forward-with-bright-round-eyes-free-png.png" },
         { id: 5, word: "FISH", image: "https://s7d2.scene7.com/is/image/PetSmart/4032827" },
         { id: 6, word: "BIRD", image: "https://media.istockphoto.com/id/626132614/id/foto/redstart-biru-yang-indah.jpg?b=1&s=612x612&w=0&k=20&c=a7bU9hGOlarZwrJqzGohdPerYWwgq3ryIoDQp8cNTro=" }
+    ]
+};
+
+export const COLOR_SPELLING_DATA = {
+    small_stars: [
+        {
+            id: 1,
+            word: "BLUE",
+            sentence: "The long jeans are",
+            image: "https://down-my.img.susercontent.com/file/31c3f08b8cc5b4823b936d35b12ef09c"
+        },
+        {
+            id: 2,
+            word: "PINK",
+            sentence: "The girl has ___ hair",
+            image: "https://i.pinimg.com/originals/cf/e4/dd/cfe4ddc471981474efc644947f996bb6.jpg"
+        },
+        {
+            id: 3,
+            word: "BROWN",
+            sentence: "The warm hat is",
+            image: "https://i5.walmartimages.com/seo/HYwys-Men-Winter-Faux-Fur-Suede-Leather-Trapper-Hat-Cap-Ski-Ushanka-Russian-Cossack-Brown_87155252-4d8e-470a-8ee9-ae8550bc8acc.e8e7f4cccbaa4565344ee745f4800ab4.jpeg"
+        },
+        {
+            id: 4,
+            word: "GREEN",
+            sentence: "The small skirt is",
+            image: "https://media-photos.depop.com/b1/35839128/1573085814_2d54806a377f4b57968c429213b05c9a/P0.jpg"
+        },
+        {
+            id: 5,
+            word: "BLUE",
+            sentence: "The soft bed is",
+            image: "https://m.media-amazon.com/images/I/71KWeSP2lSL._AC_SL1500_.jpg"
+        },
+        {
+            id: 6,
+            word: "PINK",
+            sentence: "The dress is",
+            image: "https://i.pinimg.com/originals/73/6d/da/736ddaefb6e1d14ff887d942d67ba6fe.png"
+        },
+        {
+            id: 7,
+            word: "RED",
+            sentence: "The cap is",
+            image: "https://www.loopwear.shop/image/cache/catalog/products/GEN174-900x900.jpg"
+        },
+        {
+            id: 8,
+            word: "YELLOW",
+            sentence: "The boots are",
+            image: "https://hardwarecity.com.sg/uploads/product/1728923081_pvc%20boots.png"
+        },
+        {
+            id: 9,
+            word: "BLACK",
+            sentence: "The shoes are",
+            image: "https://thursdayboots.com/cdn/shop/products/1024x1024-Men-Executive-Black-052521-1.jpg?v=1622667624"
+        },
+        {
+            id: 10,
+            word: "GREEN",
+            sentence: "The T-shirt is",
+            image: "https://i.ebayimg.com/images/g/NL0AAOSw9N1VscpB/s-l1200.jpg"
+        }
+    ]
+};
+
+export const SENTENCE_BUILDER_DATA = {
+    high_flyers: [
+        {
+            id: 1,
+            image: "https://img.freepik.com/premium-photo/little-princess-with-crown-her-head-she-is-wearing-beautiful-pink-dress-she-has-cute-smile-her-face_14117-222329.jpg",
+            sentence: "She has a beautiful pink dress"
+        },
+        {
+            id: 2,
+            imageId: 'girl_skirt',
+            sentence: "The happy girl saw a purple skirt"
+        },
+        {
+            id: 3,
+            imageId: 'grey_shoes',
+            sentence: "He quickly wear his grey shoes"
+        },
+        {
+            id: 4,
+            imageId: 'brown_hat',
+            sentence: "The brave boy wore a brown hat"
+        }
     ]
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, X } from 'lucide-react';
-import { SPELLING_GAME_DATA } from '../../data/dummyData';
+import { SPELLING_GAME_DATA, COLOR_SPELLING_DATA } from '../../data/dummyData';
 
 // Utility to shuffle
 const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
@@ -16,7 +16,6 @@ const generateGrid = (word, gridSize = 9) => {
     }));
 
     // Filter alphabet to exclude letters ALREADY in the word
-    // This solves the issue of duplicates (e.g. checking 'U' when another 'U' is the target)
     const existingChars = new Set(word.toUpperCase().split(''));
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const availableFillers = alphabet.split('').filter(c => !existingChars.has(c));
@@ -40,7 +39,8 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
     const [rounds, setRounds] = useState([]);
     const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
     const [gridItems, setGridItems] = useState([]);
-    const [foundIndices, setFoundIndices] = useState([]); // Array of correct targetIndex found so far [0, 1, 2...]
+    const [foundIndices, setFoundIndices] = useState([]); // Array of correct word indices found so far [0, 1, 2...]
+    const [usedGridItemIds, setUsedGridItemIds] = useState([]); // Track specifically which grid buttons are used
 
     // Game State
     const [score, setScore] = useState(0);
@@ -51,7 +51,13 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
 
     // Initialize Game
     useEffect(() => {
-        const pool = SPELLING_GAME_DATA[level] || SPELLING_GAME_DATA['small_stars'];
+        let pool;
+        if (stageConfig.subType === 'color') {
+            pool = COLOR_SPELLING_DATA[level] || COLOR_SPELLING_DATA['small_stars'];
+        } else {
+            pool = SPELLING_GAME_DATA[level] || SPELLING_GAME_DATA['small_stars'];
+        }
+
         if (!pool) return;
 
         // Pick random words for the number of rounds requested
@@ -61,16 +67,27 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
         setCurrentRoundIndex(0);
         setScore(0);
         setTimeLeft(stageConfig.time || 60);
-    }, [level]);
+    }, [level, stageConfig]);
 
     // Setup Current Round
     useEffect(() => {
         if (rounds.length > 0 && currentRoundIndex < rounds.length) {
             const currentWord = rounds[currentRoundIndex].word;
-            setGridItems(generateGrid(currentWord));
-            setFoundIndices([]);
+            const newGrid = generateGrid(currentWord);
+            setGridItems(newGrid);
+
+            // Scaffolding: If Color Spelling, pre-fill first letter
+            if (stageConfig.subType === 'color') {
+                setFoundIndices([0]);
+                // Find the specific grid item that corresponds to the first letter (targetIndex 0)
+                const startItem = newGrid.find(i => i.targetIndex === 0);
+                setUsedGridItemIds(startItem ? [startItem.id] : []);
+            } else {
+                setFoundIndices([]);
+                setUsedGridItemIds([]);
+            }
         }
-    }, [rounds, currentRoundIndex]);
+    }, [rounds, currentRoundIndex, stageConfig.subType]);
 
     // Timer
     useEffect(() => {
@@ -94,37 +111,25 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
         const currentWord = rounds[currentRoundIndex].word.toUpperCase();
         const nextExpectedIndex = foundIndices.length;
 
-        // Check if item is the correct next letter
-        if (item.isTarget && item.targetIndex === nextExpectedIndex) {
+        // Check if item matches the expected letter
+        if (item.char === currentWord[nextExpectedIndex]) {
             // Correct!
-            const newFound = [...foundIndices, item.targetIndex];
+            const newFound = [...foundIndices, nextExpectedIndex];
             setFoundIndices(newFound);
+            setUsedGridItemIds(prev => [...prev, item.id]);
 
             // Check Round Completion
             if (newFound.length === currentWord.length) {
                 handleRoundComplete();
             }
         } else {
-            // Wrong! (Clicked distractor OR clicked target letter out of order)
-            // Visual feedback handled by state? or simple shake?
-            // For now, let's just penalty
+            // Wrong!
             const newMistakes = mistakes + 1;
             setMistakes(newMistakes);
-            if (newMistakes > 5) {
-                // Cap score deduction? 
-                // setScore(prev => Math.max(0, prev - 2)); 
-            }
-
-            // Optional: Shake logic could go here via a ref or temp state
         }
     };
 
     const handleRoundComplete = () => {
-        // Calculate score for this round
-        // Base score per round = (Total Stage Score / Rounds)
-        // Adjust for remaining time? 
-        // For simplicity: accumulative score
-
         const roundBaseScore = 15; // Arbitrary
         setScore(prev => prev + roundBaseScore);
 
@@ -156,7 +161,7 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
     }
 
     return (
-        <div className="w-full max-w-5xl backdrop-blur-sm bg-white/90 shadow-xl rounded-3xl p-4 md:p-8 animate-fade-in-up flex flex-col items-center min-h-[600px]">
+        <div className="w-full max-w-4xl backdrop-blur-sm bg-white/90 shadow-xl rounded-3xl p-4 md:p-8 animate-fade-in-up flex flex-col items-center min-h-[500px]">
             {/* Header */}
             <div className="w-full flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
@@ -177,61 +182,82 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
                 </div>
             </div>
 
-            {/* Target Display and Image */}
-            <div className="flex flex-col items-center gap-6 mb-8 w-full max-w-md">
-                <div className="w-48 h-48 bg-slate-100 rounded-2xl p-4 flex items-center justify-center shadow-inner border-4 border-white">
-                    <img src={currentRound.image} alt={currentRound.word} className="w-full h-full object-contain" />
+            {/* Main Content Grid */}
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center justify-items-center">
+
+                {/* Left Column: Visuals */}
+                <div className="flex flex-col items-center gap-6 w-full max-w-md order-1 md:order-1">
+                    {currentRound.sentence && (
+                        <h3 className="text-xl md:text-3xl font-display font-bold text-slate-700 text-center animate-fade-in">
+                            {currentRound.sentence}
+                        </h3>
+                    )}
+
+                    <div className="w-64 h-64 md:w-72 md:h-72 bg-slate-100 rounded-3xl p-6 flex items-center justify-center shadow-inner border-4 border-white transition-all hover:scale-105 duration-500">
+                        <img src={currentRound.image} alt={currentRound.word} className="w-full h-full object-contain filter drop-shadow-lg" />
+                    </div>
                 </div>
 
-                {/* Word Placeholder Slots */}
-                <div className="flex gap-2">
-                    {wordLetters.map((char, index) => {
-                        const isFound = foundIndices.includes(index);
-                        return (
-                            <div key={index} className={`w-12 h-16 md:w-16 md:h-20 rounded-xl flex items-center justify-center text-2xl md:text-4xl font-bold border-b-4 transition-all duration-300
-                                ${isFound
-                                    ? 'bg-green-100 border-green-500 text-green-600 scale-110 shadow-lg'
-                                    : 'bg-slate-100 border-slate-300 text-slate-400'
-                                }`}>
-                                {isFound ? char : '_'}
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
+                {/* Right Column: Interaction */}
+                <div className="flex flex-col items-center gap-8 w-full max-w-md order-2 md:order-2">
 
-            {/* Letter Grid */}
-            <div className={`grid grid-cols-3 gap-3 md:gap-4 p-4 bg-slate-50/50 rounded-3xl border border-slate-100`}>
-                <AnimatePresence mode="popLayout">
-                    {gridItems.map((item) => {
-                        // Check if this specific item ID has been successfully clicked (isTarget AND targetIndex is in foundIndices)
-                        // A bit tricky: generateGrid gave unique IDs. But foundIndices tracks targetIndices (0,1,2).
-                        // We need to know if *this specific tile* represents a found letter.
-                        const isFound = item.isTarget && foundIndices.includes(item.targetIndex);
-                        const isDisabled = isFound; // Disable checks for already found letters? Or keep them visible?
-                        // Image shows "Checkmark" replacing the letter or over it.
+                    {/* Word Placeholder Slots */}
+                    <div className="flex gap-2 justify-center">
+                        {wordLetters.map((char, index) => {
+                            const isFound = foundIndices.includes(index);
+                            const isComplete = foundIndices.length === wordLetters.length;
+                            const wordColor = isComplete && stageConfig.subType === 'color' ? currentRound.word : null;
 
-                        return (
-                            <motion.button
-                                layout
-                                key={item.id}
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                whileHover={!isDisabled ? { scale: 1.05 } : {}}
-                                whileTap={!isDisabled ? { scale: 0.95 } : {}}
-                                onClick={() => handleLetterClick(item)}
-                                disabled={isDisabled}
-                                className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center text-3xl md:text-5xl font-bold shadow-sm transition-all relative
+                            return (
+                                <div key={index}
+                                    style={{
+                                        color: wordColor,
+                                        borderColor: wordColor,
+                                        backgroundColor: wordColor ? '#FFF' : undefined
+                                    }}
+                                    className={`w-12 h-16 md:w-14 md:h-18 rounded-2xl flex items-center justify-center text-3xl md:text-3xl font-bold border-b-4 transition-all duration-300
                                     ${isFound
-                                        ? 'bg-green-500 text-white shadow-green-200'
-                                        : 'bg-white text-slate-700 hover:bg-blue-50 hover:text-blue-600 border-2 border-slate-200'
-                                    }`}
-                            >
-                                {isFound ? <Check className="w-10 h-10 md:w-12 md:h-12" /> : item.char}
-                            </motion.button>
-                        );
-                    })}
-                </AnimatePresence>
+                                            ? wordColor
+                                                ? 'scale-110 shadow-lg'
+                                                : 'bg-green-100 border-green-500 text-green-600 scale-110 shadow-lg'
+                                            : 'bg-slate-100 border-slate-300 text-slate-400'
+                                        }`}>
+                                    {isFound ? char : '_'}
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Letter Grid */}
+                    <div className={`grid grid-cols-3 gap-3 md:gap-4 p-5 bg-slate-50/80 backdrop-blur-sm rounded-3xl border border-slate-200 shadow-md`}>
+                        <AnimatePresence mode="popLayout">
+                            {gridItems.map((item) => {
+                                const isFound = usedGridItemIds.includes(item.id);
+                                const isDisabled = isFound;
+
+                                return (
+                                    <motion.button
+                                        layout
+                                        key={item.id}
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        whileHover={!isDisabled ? { scale: 1.05 } : {}}
+                                        whileTap={!isDisabled ? { scale: 0.95 } : {}}
+                                        onClick={() => handleLetterClick(item)}
+                                        disabled={isDisabled}
+                                        className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center text-3xl md:text-4xl font-bold shadow-sm transition-all relative
+                                            ${isFound
+                                                ? 'bg-green-500 text-white shadow-green-200 opacity-50'
+                                                : 'bg-white text-slate-700 hover:bg-blue-50 hover:text-blue-600 border-b-4 border-slate-200 active:border-b-0 active:translate-y-1'
+                                            }`}
+                                    >
+                                        {isFound ? <Check className="w-10 h-10 md:w-12 md:h-12" /> : item.char}
+                                    </motion.button>
+                                );
+                            })}
+                        </AnimatePresence>
+                    </div>
+                </div>
             </div>
 
             {/* Celebration Overlay for Round */}
