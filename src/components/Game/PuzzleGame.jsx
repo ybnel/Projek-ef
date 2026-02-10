@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { PUZZLE_GAME_DATA } from '../../data/dummyData';
+import { shuffle } from '../../utils/gameUtils';
 import bedroomImg from '../../assets/puzzle_bedroom.png';
 import restaurantImg from '../../assets/puzzle_restaurant.png';
 import playroomImg from '../../assets/puzzle_playroom.png';
@@ -35,7 +36,7 @@ export default function PuzzleGame({ level = 'high_flyers', stageConfig, onCompl
         }
 
         // Fallback: Shuffle and return all available scenes (legacy behavior)
-        return [...data].sort(() => Math.random() - 0.5);
+        return shuffle(data);
     });
 
     // Reset loop if level changes or specific scene changes
@@ -46,7 +47,7 @@ export default function PuzzleGame({ level = 'high_flyers', stageConfig, onCompl
             const specificScene = data.find(s => s.id === stageConfig.sceneId);
             setScenes(specificScene ? [specificScene] : []);
         } else {
-            setScenes([...data].sort(() => Math.random() - 0.5));
+            setScenes(shuffle(data));
         }
 
         setCurrentSceneIndex(0);

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Play, HelpCircle } from 'lucide-react';
 import { MATCHING_GAME_DATA } from '../../data/dummyData';
+import { shuffle } from '../../utils/gameUtils';
 
-// Utility to shuffle
-const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
+
 
 export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onComplete, onBack }) {
     const [cards, setCards] = useState([]);
@@ -117,7 +117,7 @@ export default function TextMemoryGame({ level = 'high_flyers', stageConfig, onC
                 desc: "Find the pair of Present (V1) and Past (V2) forms.",
                 example: "e.g. Eat ↔ Ate"
             };
-        }
+        } 
         if (level === 'trailblazers') {
             return {
                 title: "Match Opposites!",

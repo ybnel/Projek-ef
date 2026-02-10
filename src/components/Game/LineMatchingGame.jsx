@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { LINE_MATCH_DATA } from '../../data/dummyData';
+import { shuffle } from '../../utils/gameUtils';
 
-const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
+
 
 export default function LineMatchingGame({ level = 'small_stars', stageConfig, onComplete, onBack }) {
     const [images, setImages] = useState([]);

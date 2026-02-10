@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, X } from 'lucide-react';
+import { ArrowLeft, Check, Play, HelpCircle } from 'lucide-react';
 import { SPELLING_GAME_DATA, COLOR_SPELLING_DATA } from '../../data/dummyData';
+import { shuffle } from '../../utils/gameUtils';
 
-// Utility to shuffle
-const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
+
 
 // Helper to generate grid letters
 const generateGrid = (word, gridSize = 9) => {
@@ -48,6 +48,7 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
     const [timeLeft, setTimeLeft] = useState(stageConfig.time || 60);
     const [gameOver, setGameOver] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [gameStarted, setGameStarted] = useState(false);
 
     // Initialize Game
     useEffect(() => {
@@ -91,7 +92,7 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
 
     // Timer
     useEffect(() => {
-        if (gameOver || showSuccessModal) return;
+        if (!gameStarted || gameOver || showSuccessModal) return;
 
         const timer = setInterval(() => {
             setTimeLeft(prev => {
@@ -106,7 +107,7 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
     }, [gameOver, showSuccessModal]);
 
     const handleLetterClick = (item) => {
-        if (gameOver || showSuccessModal) return;
+        if (!gameStarted || gameOver || showSuccessModal) return;
 
         const currentWord = rounds[currentRoundIndex].word.toUpperCase();
         const nextExpectedIndex = foundIndices.length;
@@ -144,6 +145,23 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
             onComplete(score + roundBaseScore + timeLeft); // Bonus for time
         }
     };
+
+    const getInstructions = () => {
+        if (stageConfig.subType === 'color') {
+            return {
+                title: "Guess the Colour!",
+                desc: "Spell the colour of the object shown.",
+                example: "e.g. R-E-D"
+            };
+        }
+        return {
+            title: "Guess the Animal!",
+            desc: "Spell the name of the animal shown.",
+            example: "e.g. C-A-T"
+        };
+    };
+
+    const instructions = getInstructions();
 
     // Current Target Word Display
     const currentRound = rounds[currentRoundIndex];
@@ -281,6 +299,46 @@ export default function SpellingGame({ level = 'small_stars', stageConfig, onCom
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+
+            {/* Start Game Modal */}
+            <AnimatePresence>
+                {!gameStarted && !gameOver && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-3xl"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            className="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-md text-center border-4 border-primary-100"
+                        >
+                            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-4 text-primary-600">
+                                <HelpCircle size={32} />
+                            </div>
+                            <h2 className="text-3xl font-display font-bold text-slate-800 mb-2">
+                                {instructions.title}
+                            </h2>
+                            <p className="text-slate-600 mb-1 text-lg">
+                                {instructions.desc}
+                            </p>
+                            <p className="text-slate-500 italic mb-8">
+                                {instructions.example}
+                            </p>
+
+                            <button
+                                onClick={() => setGameStarted(true)}
+                                className="group relative px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white rounded-2xl font-bold text-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center gap-3"
+                            >
+                                <Play className="fill-current" />
+                                I'm Ready!
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div >
     );
 }

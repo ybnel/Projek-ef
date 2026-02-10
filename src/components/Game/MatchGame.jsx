@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { MATCHING_GAME_DATA } from '../../data/dummyData';
 import { ArrowLeft, Maximize, Minimize } from 'lucide-react';
+import { shuffle } from '../../utils/gameUtils';
 
-// Simple shuffle function
-const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
+
 
 export default function MatchGame({ level = 'small_stars', stageConfig, onComplete, onBack }) {
     const [items, setItems] = useState([]);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, RefreshCw } from 'lucide-react';
 import { SENTENCE_BUILDER_DATA } from '../../data/dummyData';
+import { shuffle } from '../../utils/gameUtils';
 
 // Images mapping (using existing puzzle images for context)
 import bedroomImg from '../../assets/puzzle_bedroom.png';
@@ -37,7 +38,7 @@ export default function SentenceBuilderGame({ level = 'high_flyers', stageConfig
     useEffect(() => {
         const data = SENTENCE_BUILDER_DATA[level] || [];
         // Shuffle scenarios or take random 2
-        const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 2);
+        const shuffled = shuffle(data).slice(0, 2);
         setScenarios(shuffled);
         setCurrentScenarioIndex(0);
         setScore(0);
@@ -55,7 +56,7 @@ export default function SentenceBuilderGame({ level = 'high_flyers', stageConfig
                 text: text
             }));
 
-            setWordBank([...words].sort(() => Math.random() - 0.5));
+            setWordBank(shuffle(words));
             setBuiltSentence([]);
             setIsCorrect(null);
         } else if (scenarios.length > 0 && currentScenarioIndex >= scenarios.length) {
@@ -123,7 +124,7 @@ export default function SentenceBuilderGame({ level = 'high_flyers', stageConfig
             id: `${currentScenario.id}-${idx}-${text}`,
             text: text
         }));
-        setWordBank([...words].sort(() => Math.random() - 0.5));
+        setWordBank(shuffle(words));
         setBuiltSentence([]);
         setIsCorrect(null);
     };

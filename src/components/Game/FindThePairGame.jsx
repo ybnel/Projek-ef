@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { MATCHING_GAME_DATA } from '../../data/dummyData';
+import { shuffle } from '../../utils/gameUtils';
 
-// Utility to shuffle
-const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
+
 
 export default function FindThePairGame({ level = 'small_stars', stageConfig, onComplete, onBack }) {
     const [items, setItems] = useState([]);
